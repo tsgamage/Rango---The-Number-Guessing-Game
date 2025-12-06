@@ -6,12 +6,7 @@ import PrimaryButton from "../GameMod/PrimaryButton";
 import DynamicReaction from "../../ui/DynamicReaction";
 import { pickRandomIndex } from "../../../utils/utils";
 
-interface Props {
-  onContinue: () => void;
-  onGoingBack: () => void;
-}
-
-function OptionSelectingScreen({ onGoingBack, onContinue }: Props) {
+function OptionSelectingScreen() {
   // easy: 1- 20
   // medium: 1- 50
   // hard: 1- 100
@@ -21,8 +16,7 @@ function OptionSelectingScreen({ onGoingBack, onContinue }: Props) {
   type ChanceOptions = "10" | "15" | "20";
   const chanceOptions: ChanceOptions[] = ["10", "15", "20"];
 
-  const [numberRangeOption, setNumberRangeOption] =
-    useState<NumberRangeOptions>("Easy");
+  const [numberRangeOption, setNumberRangeOption] = useState<NumberRangeOptions>("Easy");
   const [chanceOption, setChanceOption] = useState<ChanceOptions>("20");
 
   const handleNumberRangeOptionChange = (option: NumberRangeOptions) => {
@@ -36,15 +30,11 @@ function OptionSelectingScreen({ onGoingBack, onContinue }: Props) {
   const dynamicReactionTexts = ["Let's Go", "Ready", "Let's Play"];
 
   return (
-    <ScreenWrapper onGoingBack={onGoingBack}>
+    <ScreenWrapper>
       <ScreenHeader>Customize Your Challenge</ScreenHeader>
       <View style={styles.container}>
         <View>
-          <ScreenHeader
-            style={styles.optionHeaderContainer}
-            headerStyle={styles.optionHeader}
-            headerSize="small"
-          >
+          <ScreenHeader style={styles.optionHeaderContainer} headerStyle={styles.optionHeader} headerSize="small">
             Number Range:
           </ScreenHeader>
           <View style={styles.numberRangeOptionButtonsContainer}>
@@ -62,11 +52,7 @@ function OptionSelectingScreen({ onGoingBack, onContinue }: Props) {
           </View>
         </View>
         <View>
-          <ScreenHeader
-            style={styles.optionHeaderContainer}
-            headerStyle={styles.optionHeader}
-            headerSize="small"
-          >
+          <ScreenHeader style={styles.optionHeaderContainer} headerStyle={styles.optionHeader} headerSize="small">
             Chance:
           </ScreenHeader>
           <View style={styles.chanceOptionButtonsContainer}>
@@ -86,14 +72,8 @@ function OptionSelectingScreen({ onGoingBack, onContinue }: Props) {
           </View>
         </View>
         <View>
-          <PrimaryButton
-            label="Let's Go"
-            onPress={onContinue}
-            icon={{ icon: "arrow-forward" }}
-          />
-          <DynamicReaction>
-            {dynamicReactionTexts[pickRandomIndex(dynamicReactionTexts)]}
-          </DynamicReaction>
+          <PrimaryButton label="Let's Go" onPress={() => {}} icon={{ icon: "arrow-forward" }} />
+          <DynamicReaction>{dynamicReactionTexts[pickRandomIndex(dynamicReactionTexts)]}</DynamicReaction>
         </View>
       </View>
     </ScreenWrapper>

@@ -5,13 +5,12 @@ import PrimaryButton from "../GameMod/PrimaryButton";
 import DynamicReaction from "../../ui/DynamicReaction";
 import { FontSize } from "../../../constants/theme";
 import { pickRandomIndex } from "../../../utils/utils";
+import { Game2StackParamList } from "../../../screens/Game2Screen";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-interface Props {
-  onPlay: () => void;
-  onPause: () => void;
-}
+type Props = NativeStackScreenProps<Game2StackParamList, "Play">;
 
-function PlayingScreen({ onPlay, onPause }: Props) {
+function PlayScreen({ navigation }: Props) {
   const dynamicLieMessages = [
     "You are not telling the truth",
     "Why bullying the app huh",
@@ -21,7 +20,14 @@ function PlayingScreen({ onPlay, onPause }: Props) {
   ];
 
   return (
-    <GameWrapper onPlay={onPlay} onPause={onPause}>
+    <GameWrapper
+      onPlay={() => {
+        navigation.goBack();
+      }}
+      onPause={() => {
+        navigation.goBack();
+      }}
+    >
       <View style={styles.container}>
         <View style={styles.guessContainer}>
           <View style={styles.guessTextContainer}>
@@ -35,7 +41,7 @@ function PlayingScreen({ onPlay, onPause }: Props) {
             <View style={styles.buttonContainer}>
               <PrimaryButton
                 label="Lower"
-                onPress={onPlay}
+                onPress={() => {}}
                 containerStyle={styles.buttonContainer}
                 buttonContainerStyle={styles.button}
                 icon={{ icon: "arrow-down" }}
@@ -43,11 +49,7 @@ function PlayingScreen({ onPlay, onPause }: Props) {
               <PrimaryButton
                 label="Higher"
                 onPress={() =>
-                  Alert.alert(
-                    "Don't Lie to me...",
-                    dynamicLieMessages[pickRandomIndex(dynamicLieMessages)],
-                    [{ text: "Sorry", onPress: () => {} }]
-                  )
+                  Alert.alert("Don't Lie to me...", dynamicLieMessages[pickRandomIndex(dynamicLieMessages)], [{ text: "Sorry", onPress: () => {} }])
                 }
                 containerStyle={styles.buttonContainer}
                 buttonContainerStyle={styles.button}
@@ -61,7 +63,7 @@ function PlayingScreen({ onPlay, onPause }: Props) {
   );
 }
 
-export default PlayingScreen;
+export default PlayScreen;
 
 const styles = StyleSheet.create({
   container: {

@@ -1,13 +1,12 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet, Text, View } from "react-native";
 import PrimaryButton from "../components/screens/GameMod/PrimaryButton";
-import { AppState } from "../App";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../App";
 
-interface Props {
-  onContinue: (state: AppState) => void;
-}
+type Props = NativeStackScreenProps<RootStackParamList, "Welcome">;
 
-function WelcomeScreen({ onContinue }: Props) {
+function WelcomeScreen({ navigation }: Props) {
   return (
     <SafeAreaView style={styles.container}>
       <View>
@@ -15,11 +14,7 @@ function WelcomeScreen({ onContinue }: Props) {
         <Text style={styles.subText}>To the Ultimate Guessing Experience</Text>
       </View>
       <View style={styles.buttonContainer}>
-        <PrimaryButton
-          label="Continue"
-          onPress={() => onContinue("game_mode_select")}
-          icon={{ icon: "arrow-forward" }}
-        />
+        <PrimaryButton label="Continue" onPress={() => navigation.navigate("GameModeSelect")} icon={{ icon: "arrow-forward" }} />
       </View>
     </SafeAreaView>
   );

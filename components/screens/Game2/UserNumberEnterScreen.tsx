@@ -6,16 +6,12 @@ import { useState } from "react";
 import ScreenHeader from "../../ui/ScreenHeader";
 import { FontSize } from "../../../constants/theme";
 import ScreenWrapper from "../../ui/ScreenWrapper";
+import { Game2StackParamList } from "../../../screens/Game2Screen";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-interface Props {
-  onContinue: () => void;
-  onGoingBack: () => void;
-}
+type Props = NativeStackScreenProps<Game2StackParamList, "UserNumberEntering">;
 
-export const UserNumberEnteringScreen = ({
-  onContinue,
-  onGoingBack,
-}: Props) => {
+export const UserNumberEnteringScreen = ({ navigation }: Props) => {
   const [userNumber, setUserNumber] = useState<string>("");
 
   const dynamicReactionTexts = [
@@ -27,32 +23,25 @@ export const UserNumberEnteringScreen = ({
   ];
 
   return (
-    <ScreenWrapper onGoingBack={onGoingBack}>
+    <ScreenWrapper>
       <View style={style.container}>
         <View>
           <ScreenHeader>Enter Your Secret Number</ScreenHeader>
           <ScreenHeader headerSize="small">Between 1 and 100</ScreenHeader>
         </View>
         <View style={style.inputContainer}>
-          <TextInput
-            style={style.input}
-            keyboardType="numeric"
-            value={userNumber}
-            onChangeText={setUserNumber}
-            maxLength={2}
-            inputMode="numeric"
-          />
+          <TextInput style={style.input} keyboardType="numeric" value={userNumber} onChangeText={setUserNumber} maxLength={2} inputMode="numeric" />
           <PrimaryButton
             containerStyle={style.continueButtonContainer}
             buttonContainerStyle={style.continueButton}
             label="Continue"
             icon={{ icon: "arrow-forward" }}
-            onPress={onContinue}
+            onPress={() => {
+              navigation.navigate("Play");
+            }}
           />
         </View>
-        <DynamicReaction>
-          {dynamicReactionTexts[pickRandomIndex(dynamicReactionTexts)]}
-        </DynamicReaction>
+        <DynamicReaction>{dynamicReactionTexts[pickRandomIndex(dynamicReactionTexts)]}</DynamicReaction>
       </View>
     </ScreenWrapper>
   );

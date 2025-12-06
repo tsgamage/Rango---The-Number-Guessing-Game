@@ -1,37 +1,22 @@
-import { useState } from "react";
-import { Text, View } from "react-native";
-import { AppState } from "../App";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import PlayStyleSelectingScreen from "../components/screens/Game1/PlayStyleSelectingScreen";
 import OptionSelectingScreen from "../components/screens/Game1/OptionSelectingScreen";
-import PlayingScreen from "../components/screens/Game1/PlayingScreen";
+import PlayScreen from "../components/screens/Game1/PlayScreen";
 
-interface Props {
-  onAppStateChange: (state: AppState) => void;
-}
+export type Game1StackParamList = {
+  PlayStyleSelecting: undefined;
+  OptionSelecting: undefined;
+  Play: undefined;
+};
 
-function Game1Screen({ onAppStateChange }: Props) {
-  type GameState = "option_selecting" | "playing";
-  const [gameState, setGameState] = useState<GameState>("option_selecting");
-
-  const renderScreen = () => {
-    switch (gameState) {
-      case "option_selecting":
-        return (
-          <OptionSelectingScreen
-            onContinue={() => setGameState("playing")}
-            onGoingBack={() => onAppStateChange("game_mode_select")}
-          />
-        );
-      case "playing":
-        return (
-          <PlayingScreen
-            onPause={() => setGameState("option_selecting")}
-            onPlay={() => setGameState("playing")}
-          />
-        );
-      default:
-        return null;
-    }
-  };
-  return renderScreen();
+function Game1Screen() {
+  const Game1Stack = createNativeStackNavigator<Game1StackParamList>();
+  return (
+    <Game1Stack.Navigator initialRouteName="PlayStyleSelecting" screenOptions={{ headerTransparent: true, headerTitle: "" }}>
+      <Game1Stack.Screen name="PlayStyleSelecting" component={PlayStyleSelectingScreen} />
+      <Game1Stack.Screen name="OptionSelecting" component={OptionSelectingScreen} />
+      <Game1Stack.Screen name="Play" component={PlayScreen} options={{ headerShown: false }} />
+    </Game1Stack.Navigator>
+  );
 }
 export default Game1Screen;

@@ -1,19 +1,21 @@
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import PrimaryButton, { IPrimaryButton } from "../components/screens/GameMod/PrimaryButton";
-import { Colors, FontSize } from "../constants/theme";
-import { RootStackParamList } from "../App";
-import { pickRandomIndex } from "../utils/utils";
-import DynamicReaction from "../components/ui/DynamicReaction";
-import ScreenHeader from "../components/ui/ScreenHeader";
+import PrimaryButton, { IPrimaryButton } from "../GameMod/PrimaryButton";
+import { Colors, FontSize } from "../../../constants/theme";
+import { RootStackParamList } from "../../../App";
+import { pickRandomIndex } from "../../../utils/utils";
+import DynamicReaction from "../../ui/DynamicReaction";
+import ScreenHeader from "../../ui/ScreenHeader";
 import { useMemo, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import ScreenWrapper from "../../ui/ScreenWrapper";
+import { Game1StackParamList } from "../../../screens/Game1Screen";
 
 const descriptionTexts = ["Select how you want to challenge your brain", "Pick a style. Let's rumble!", "Choose your vibe for this round."];
 
-type Props = NativeStackScreenProps<RootStackParamList, "GameModeSelect">;
+type Props = NativeStackScreenProps<Game1StackParamList, "PlayStyleSelecting">;
 
-function GameModeSelectScreen({ navigation }: Props) {
+function PlayStyleSelectingScreen({ navigation }: Props) {
   const [gameDescription, setGameDescription] = useState<{
     game: number;
     description: string;
@@ -21,15 +23,11 @@ function GameModeSelectScreen({ navigation }: Props) {
   const gameDescriptions = [
     {
       game: 1,
-      description: "You'll guess the number the Rango is thinking of. Beat it in limited attempts!",
+      description: "A relaxed guessing experience. No limits, no pressure. Just pure discovery",
     },
     {
       game: 2,
-      description: "Guide Rango with your hints and watch how efficiently it can track down your number.",
-    },
-    {
-      game: 3,
-      description: "Face off against Rango in alternating rounds. Outthink, outrun, and outguess.",
+      description: "A competitive guessing experience. Beat the Rango in limited attempts!",
     },
   ];
 
@@ -39,35 +37,26 @@ function GameModeSelectScreen({ navigation }: Props) {
 
   const gamemods: IPrimaryButton[] = [
     {
-      label: "I Will Guess",
+      label: "Zen Mode",
       onPress() {
         setGameDescription(gameDescriptions[0]);
       },
       onLongPress() {
-        navigation.navigate("Game1");
+        navigation.navigate("Play");
       },
     },
     {
-      label: "Rango Will Guess",
+      label: "Challenge Mode",
       onPress() {
         setGameDescription(gameDescriptions[1]);
       },
       onLongPress() {
-        navigation.navigate("Game2");
-      },
-    },
-    {
-      label: "Guessing Battle",
-      onPress() {
-        setGameDescription(gameDescriptions[2]);
-      },
-      onLongPress() {
-        navigation.navigate("Game3");
+        navigation.navigate("OptionSelecting");
       },
     },
   ];
   return (
-    <SafeAreaView
+    <ScreenWrapper
       style={{
         flex: 1,
         justifyContent: "space-between",
@@ -102,7 +91,7 @@ function GameModeSelectScreen({ navigation }: Props) {
         ))}
       </View>
       <DynamicReaction>{dynamicReactionText}</DynamicReaction>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 
@@ -127,4 +116,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GameModeSelectScreen;
+export default PlayStyleSelectingScreen;
