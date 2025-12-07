@@ -103,7 +103,7 @@ const PrimaryButton: React.FC<IPrimaryButton> = ({
           ]}
         >
           <View style={[styles.button, buttonStyle]}>
-            {icon && iconVisible && iconPositionLeft && (
+            {icon && !isSelected && iconVisible && iconPositionLeft && (
               <Ionicons
                 name={icon.icon}
                 size={24}
@@ -112,7 +112,7 @@ const PrimaryButton: React.FC<IPrimaryButton> = ({
               />
             )}
             <Text style={[styles.buttonText, buttonTextStyle, isSelected && { color: Colors.textHighlight }]}>{label}</Text>
-            {icon && iconVisible && iconPositionRight && (
+            {icon && !isSelected && iconVisible && iconPositionRight && (
               <Ionicons
                 name={icon.icon}
                 size={24}
@@ -182,6 +182,7 @@ const styles = StyleSheet.create({
   },
   buttonDescription: {
     fontSize: FontSize.small,
+    textAlign: "center",
     color: Colors.textSecondary,
     marginTop: 2,
   },

@@ -95,9 +95,8 @@ function GameModeSelectScreen({ navigation }: Props) {
               onLongPress={gamemod.onLongPress}
               // Only show description if selected
               description={index + 1 === gameDescription?.game ? gameDescription?.description : undefined}
-              isSelected={index + 1 === gameDescription?.game}
               icon={{
-                visible: true,
+                visible: gameDescription?.game !== index + 1,
                 icon: "arrow-forward",
                 position: "right",
               }}

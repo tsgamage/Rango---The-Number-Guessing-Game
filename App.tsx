@@ -25,7 +25,7 @@ export default function App() {
   return (
     <>
       <NavigationContainer>
-        <StatusBar style="dark" />
+        <StatusBar style="light" />
         <Stack.Navigator initialRouteName="Welcome" screenOptions={{ headerTransparent: true, headerTitle: "", headerShown: false }}>
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
           <Stack.Screen name="GameModeSelect" component={GameModeSelectScreen} />

@@ -63,6 +63,48 @@ function PlayScreen({ navigation, route }: Props) {
     );
   };
 
+  const onGuessPress = () => {
+    if (usersGuess === "") return;
+    const guessNum = parseInt(usersGuess);
+    if (isNaN(guessNum)) return;
+
+    // Logic copied from previous implementation, but cleaned up
+    setAttempts((prev) => prev - 1);
+    setUserGuesses((prev) => [...prev, guessNum]);
+    const guessNumber = parseInt(usersGuess);
+    const tooFar = Math.abs(guessNumber - targetNumber) > 50;
+    const tooHigh = guessNumber > targetNumber && Math.abs(guessNumber - targetNumber) > 20;
+    const tooLow = guessNumber < targetNumber && Math.abs(guessNumber - targetNumber) > 20;
+    const high = guessNumber > targetNumber;
+    const low = guessNumber < targetNumber;
+    const close = Math.abs(guessNumber - targetNumber) <= 5;
+
+    // Reset input
+    setUsersGuess("");
+
+    if (tooFar) {
+      setReaction(getRandomItem(dynamicReactions.guessTooFar));
+      setHint(`${guessNumber} is Way off!`);
+    } else if (tooHigh) {
+      setReaction(getRandomItem(dynamicReactions.guessTooHigh));
+      setHint(`${guessNumber} is Too High`);
+    } else if (tooLow) {
+      setReaction(getRandomItem(dynamicReactions.guessTooLow));
+      setHint(`${guessNumber} is Too Low`);
+    } else if (high) {
+      setReaction(close ? getRandomItem(dynamicReactions.guessTooClose) : getRandomItem(dynamicReactions.guessTooHigh));
+      setHint(`${guessNumber} is High`);
+    } else if (low) {
+      setReaction(close ? getRandomItem(dynamicReactions.guessTooClose) : getRandomItem(dynamicReactions.guessTooLow));
+      setHint(`${guessNumber} is Low`);
+    } else if (guessNumber === targetNumber) {
+      Alert.alert("Victory!", getRandomItem(dynamicReactions.userWon), [
+        { text: "Play Again", onPress: () => restartGame() },
+        { text: "Exit", onPress: () => navigation.goBack() },
+      ]);
+    }
+  };
+
   return (
     <GameWrapper onPlay={() => navigation.goBack()} onPause={() => navigation.goBack()}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
@@ -91,50 +133,9 @@ function PlayScreen({ navigation, route }: Props) {
 
               <PrimaryButton
                 label="GUESS"
-                onPress={() => {
-                  if (usersGuess === "") return;
-                  const guessNum = parseInt(usersGuess);
-                  if (isNaN(guessNum)) return;
-
-                  // Logic copied from previous implementation, but cleaned up
-                  setAttempts((prev) => prev - 1);
-                  setUserGuesses((prev) => [...prev, guessNum]);
-                  const guessNumber = parseInt(usersGuess);
-                  const tooFar = Math.abs(guessNumber - targetNumber) > 50;
-                  const tooHigh = guessNumber > targetNumber && Math.abs(guessNumber - targetNumber) > 20;
-                  const tooLow = guessNumber < targetNumber && Math.abs(guessNumber - targetNumber) > 20;
-                  const high = guessNumber > targetNumber;
-                  const low = guessNumber < targetNumber;
-                  const close = Math.abs(guessNumber - targetNumber) <= 5;
-
-                  // Reset input
-                  setUsersGuess("");
-
-                  if (tooFar) {
-                    setReaction(getRandomItem(dynamicReactions.guessTooFar));
-                    setHint(`${guessNumber} is Way off!`);
-                  } else if (tooHigh) {
-                    setReaction(getRandomItem(dynamicReactions.guessTooHigh));
-                    setHint(`${guessNumber} is Too High`);
-                  } else if (tooLow) {
-                    setReaction(getRandomItem(dynamicReactions.guessTooLow));
-                    setHint(`${guessNumber} is Too Low`);
-                  } else if (high) {
-                    setReaction(close ? getRandomItem(dynamicReactions.guessTooClose) : getRandomItem(dynamicReactions.guessTooHigh));
-                    setHint(`${guessNumber} is High`);
-                  } else if (low) {
-                    setReaction(close ? getRandomItem(dynamicReactions.guessTooClose) : getRandomItem(dynamicReactions.guessTooLow));
-                    setHint(`${guessNumber} is Low`);
-                  } else if (guessNumber === targetNumber) {
-                    Alert.alert("Victory!", getRandomItem(dynamicReactions.userWon), [
-                      { text: "Play Again", onPress: () => restartGame() },
-                      { text: "Exit", onPress: () => navigation.goBack() },
-                    ]);
-                  }
-                }}
+                onPress={onGuessPress}
                 disabled={usersGuess === ""}
                 containerStyle={styles.submitButtonContainer}
-                buttonStyle={styles.submitButton}
                 buttonTextStyle={{ fontSize: 18, fontWeight: "bold" }}
               />
             </View>
@@ -190,9 +191,6 @@ const styles = StyleSheet.create({
   },
   submitButtonContainer: {
     width: "100%",
-  },
-  submitButton: {
-    marginTop: 10,
   },
   historyLabel: {
     color: Colors.textSecondary,

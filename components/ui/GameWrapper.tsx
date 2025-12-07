@@ -40,11 +40,9 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   goBackIcon: {},
-  backIcon: { fontSize: FontSize.extraExtraLarge },
+  backIcon: { fontSize: FontSize.extraExtraLarge, color: Colors.textSecondary },
   container: {
     flex: 1,
-    padding: 10,
-    // Background handled by LinearGradient wrapper
   },
 });
 

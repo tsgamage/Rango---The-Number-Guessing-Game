@@ -3,21 +3,22 @@ import GameWrapper from "../../ui/GameWrapper";
 import ScreenHeader from "../../ui/ScreenHeader";
 import PrimaryButton from "../GameMod/PrimaryButton";
 import DynamicReaction from "../../ui/DynamicReaction";
-import { FontSize } from "../../../constants/theme";
+import { Colors, FontSize } from "../../../constants/theme";
 import { getRandomItem } from "../../../utils/utils";
+import { useState } from "react";
+import { dynamicReactions } from "../../../data/dynamicReactions";
 import { Game2StackParamList } from "../../../screens/Game2Screen";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 type Props = NativeStackScreenProps<Game2StackParamList, "Play">;
 
 function PlayScreen({ navigation }: Props) {
-  const dynamicLieMessages = [
-    "You are not telling the truth",
-    "Why bullying the app huh",
-    "I'm not dumb you know",
-    "Someone is cheatinggg",
-    "Stop trolling me",
-  ];
+  const [reaction, setReaction] = useState("");
+
+  const handleLying = () => {
+    setReaction(getRandomItem(dynamicReactions.lying));
+    Alert.alert("Don't Lie to me...", getRandomItem(dynamicReactions.lying), [{ text: "Sorry", onPress: () => {} }]);
+  };
 
   return (
     <GameWrapper
@@ -29,31 +30,24 @@ function PlayScreen({ navigation }: Props) {
       }}
     >
       <View style={styles.container}>
-        <View style={styles.guessContainer}>
-          <View style={styles.guessTextContainer}>
-            <Text style={styles.guessText}>Is This Your Number?</Text>
-            <View style={styles.guessNumberContainer}>
-              <Text style={styles.guessNumber}>99</Text>
-            </View>
+        {/* Dynamic Reaction at Top */}
+
+        {/* Circular Glass Card for the Guess */}
+        <View style={styles.circleContainer}>
+          <View style={styles.glassCircle}>
+            <Text style={styles.guessNumber}>99</Text>
           </View>
-          <View style={styles.bottomContainer}>
-            <Text style={styles.guessText}>How close am I?</Text>
-            <View style={styles.buttonContainer}>
-              <PrimaryButton
-                label="Lower"
-                onPress={() => {}}
-                containerStyle={styles.buttonContainer}
-                buttonContainerStyle={styles.button}
-                icon={{ icon: "arrow-down" }}
-              />
-              <PrimaryButton
-                label="Higher"
-                onPress={() => Alert.alert("Don't Lie to me...", getRandomItem(dynamicLieMessages), [{ text: "Sorry", onPress: () => {} }])}
-                containerStyle={styles.buttonContainer}
-                buttonContainerStyle={styles.button}
-                icon={{ icon: "arrow-up" }}
-              />
-            </View>
+        </View>
+        <View style={{ minHeight: 60, justifyContent: "center", alignItems: "center", width: "100%" }}>
+          {reaction ? <DynamicReaction>{reaction}</DynamicReaction> : <Text style={styles.headerText}>Is This Your Number?</Text>}
+        </View>
+        <View style={styles.controlsContainer}>
+          <View style={styles.hintTextContainer}>
+            <Text style={styles.hintText}>Tell Rango...</Text>
+          </View>
+          <View style={styles.buttonContainer}>
+            <PrimaryButton label="Lower" onPress={() => {}} containerStyle={styles.actionButtonContainer} icon={{ icon: "arrow-down" }} />
+            <PrimaryButton label="Higher" onPress={handleLying} containerStyle={styles.actionButtonContainer} icon={{ icon: "arrow-up" }} />
           </View>
         </View>
       </View>
@@ -66,47 +60,69 @@ export default PlayScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 24,
     justifyContent: "space-evenly",
     alignItems: "center",
   },
-  bottomContainer: {
-    alignItems: "center",
+  headerText: {
+    fontSize: FontSize.extraLarge,
+    color: Colors.text,
+    fontWeight: "bold",
+    textAlign: "center",
+    textShadowColor: Colors.primaryDark,
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 4,
   },
-  guessTextContainer: {
-    alignItems: "center",
-  },
-  guessText: {
-    fontSize: FontSize.large,
-    marginVertical: 10,
-  },
-  guessNumberContainer: {
+  circleContainer: {
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderWidth: 1,
-    borderColor: "gray",
-    borderRadius: "100%",
-    backgroundColor: "white",
+    marginVertical: 20,
+    width: 300,
+    height: 300,
+  },
+  glassCircle: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 9999,
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    borderColor: Colors.glassBorder,
+    borderWidth: 4,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: Colors.primaryDark,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 8,
   },
   guessNumber: {
-    fontSize: FontSize.superLarge,
+    fontSize: 100,
+    fontWeight: "bold",
+    color: Colors.textHighlight,
+    textShadowColor: Colors.primaryDark,
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 10,
+  },
+  controlsContainer: {
+    width: "100%",
+    gap: 24,
+    paddingBottom: 24,
+  },
+  hintTextContainer: {
+    alignItems: "center",
+  },
+  hintText: {
+    fontSize: FontSize.medium,
+    color: Colors.textSecondary,
+    marginBottom: -20,
   },
   buttonContainer: {
-    gap: 10,
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    gap: 16,
+    justifyContent: "center",
+    width: "100%",
   },
-  button: {
-    paddingVertical: 10,
-  },
-  guessContainer: {
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: "whitesmoke",
-    padding: 20,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "gray",
+  actionButtonContainer: {
+    flex: 1,
   },
 });
