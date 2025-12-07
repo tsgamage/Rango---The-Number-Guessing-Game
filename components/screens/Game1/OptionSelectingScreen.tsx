@@ -4,7 +4,7 @@ import ScreenHeader from "../../ui/ScreenHeader";
 import ScreenWrapper from "../../ui/ScreenWrapper";
 import PrimaryButton from "../GameMod/PrimaryButton";
 import DynamicReaction from "../../ui/DynamicReaction";
-import { pickRandomIndex } from "../../../utils/utils";
+import { getRandomItem } from "../../../utils/utils";
 import { FontSize } from "../../../constants/theme";
 
 function OptionSelectingScreen() {
@@ -81,7 +81,7 @@ function OptionSelectingScreen() {
         </View>
         <View>
           <PrimaryButton label="Let's Go" onPress={() => console.log("")} icon={{ icon: "arrow-forward" }} />
-          <DynamicReaction>{dynamicReactionTexts[pickRandomIndex(dynamicReactionTexts)]}</DynamicReaction>
+          <DynamicReaction>{getRandomItem(dynamicReactionTexts)}</DynamicReaction>
         </View>
       </View>
     </ScreenWrapper>

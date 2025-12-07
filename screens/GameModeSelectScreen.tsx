@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import PrimaryButton, { IPrimaryButton } from "../components/screens/GameMod/PrimaryButton";
 import { Colors, FontSize } from "../constants/theme";
 import { RootStackParamList } from "../App";
-import { pickRandomIndex } from "../utils/utils";
+import { getRandomItem } from "../utils/utils";
 import DynamicReaction from "../components/ui/DynamicReaction";
 import ScreenHeader from "../components/ui/ScreenHeader";
 import { useMemo, useState } from "react";
@@ -34,7 +34,7 @@ function GameModeSelectScreen({ navigation }: Props) {
   ];
 
   const dynamicReactionText = useMemo(() => {
-    return descriptionTexts[pickRandomIndex(descriptionTexts)];
+    return getRandomItem(descriptionTexts);
   }, []);
 
   const gamemods: IPrimaryButton[] = [

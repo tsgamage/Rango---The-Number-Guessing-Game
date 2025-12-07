@@ -3,13 +3,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import PrimaryButton, { IPrimaryButton } from "../GameMod/PrimaryButton";
 import { Colors, FontSize } from "../../../constants/theme";
 import { RootStackParamList } from "../../../App";
-import { pickRandomIndex } from "../../../utils/utils";
 import DynamicReaction from "../../ui/DynamicReaction";
 import ScreenHeader from "../../ui/ScreenHeader";
 import { useMemo, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import ScreenWrapper from "../../ui/ScreenWrapper";
 import { Game1StackParamList } from "../../../screens/Game1Screen";
+import { getRandomItem } from "../../../utils/utils";
 
 const descriptionTexts = ["Select how you want to challenge your brain", "Pick a style. Let's rumble!", "Choose your vibe for this round."];
 
@@ -32,7 +32,7 @@ function PlayStyleSelectingScreen({ navigation }: Props) {
   ];
 
   const dynamicReactionText = useMemo(() => {
-    return descriptionTexts[pickRandomIndex(descriptionTexts)];
+    return getRandomItem(descriptionTexts);
   }, []);
 
   const gamemods: IPrimaryButton[] = [

@@ -4,7 +4,7 @@ import ScreenHeader from "../../ui/ScreenHeader";
 import PrimaryButton from "../GameMod/PrimaryButton";
 import DynamicReaction from "../../ui/DynamicReaction";
 import { FontSize } from "../../../constants/theme";
-import { pickRandomIndex } from "../../../utils/utils";
+import { getRandomItem } from "../../../utils/utils";
 import { Game2StackParamList } from "../../../screens/Game2Screen";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
@@ -48,9 +48,7 @@ function PlayScreen({ navigation }: Props) {
               />
               <PrimaryButton
                 label="Higher"
-                onPress={() =>
-                  Alert.alert("Don't Lie to me...", dynamicLieMessages[pickRandomIndex(dynamicLieMessages)], [{ text: "Sorry", onPress: () => {} }])
-                }
+                onPress={() => Alert.alert("Don't Lie to me...", getRandomItem(dynamicLieMessages), [{ text: "Sorry", onPress: () => {} }])}
                 containerStyle={styles.buttonContainer}
                 buttonContainerStyle={styles.button}
                 icon={{ icon: "arrow-up" }}

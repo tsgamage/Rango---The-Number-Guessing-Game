@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import PrimaryButton from "../GameMod/PrimaryButton";
 import DynamicReaction from "../../ui/DynamicReaction";
-import { pickRandomIndex } from "../../../utils/utils";
+import { getRandomItem } from "../../../utils/utils";
 import { useState } from "react";
 import ScreenHeader from "../../ui/ScreenHeader";
 import { FontSize } from "../../../constants/theme";
@@ -41,7 +41,7 @@ export const UserNumberEnteringScreen = ({ navigation }: Props) => {
             }}
           />
         </View>
-        <DynamicReaction>{dynamicReactionTexts[pickRandomIndex(dynamicReactionTexts)]}</DynamicReaction>
+        <DynamicReaction>{getRandomItem(dynamicReactionTexts)}</DynamicReaction>
       </View>
     </ScreenWrapper>
   );
