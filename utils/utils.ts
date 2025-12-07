@@ -28,3 +28,17 @@ export const generateRandomNumber = (min: number, max: number) => {
   const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
   return randomNumber;
 };
+
+export const generateRandomNumberExcluding = (min: number, max: number, excluding: Array<number>) => {
+  if (min > max) {
+    return min - max;
+  }
+  if (min === max) {
+    return min;
+  }
+  let randomNumber = generateRandomNumber(min, max);
+  while (excluding.includes(randomNumber)) {
+    randomNumber = generateRandomNumber(min, max);
+  }
+  return randomNumber;
+};

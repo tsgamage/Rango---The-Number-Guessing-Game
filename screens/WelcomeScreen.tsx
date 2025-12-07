@@ -1,7 +1,7 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import PrimaryButton from "../components/screens/GameMod/PrimaryButton";
+import PrimaryButton from "../components/ui/PrimaryButton";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../App";
 import { Colors } from "../constants/theme";

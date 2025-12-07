@@ -7,11 +7,12 @@ import { Colors } from "../constants/theme";
 export type Game1StackParamList = {
   PlayStyleSelecting: undefined;
   OptionSelecting: undefined;
-  Play: { attempts: number; maxNumber: number };
+  Play: undefined;
 };
 
 function Game1Screen() {
   const Game1Stack = createNativeStackNavigator<Game1StackParamList>();
+
   return (
     <Game1Stack.Navigator
       initialRouteName="PlayStyleSelecting"
@@ -19,7 +20,7 @@ function Game1Screen() {
     >
       <Game1Stack.Screen name="PlayStyleSelecting" component={PlayStyleSelectingScreen} />
       <Game1Stack.Screen name="OptionSelecting" component={OptionSelectingScreen} />
-      <Game1Stack.Screen name="Play" component={PlayScreen} options={{ headerShown: false }} />
+      <Game1Stack.Screen name="Play" component={PlayScreen} />
     </Game1Stack.Navigator>
   );
 }

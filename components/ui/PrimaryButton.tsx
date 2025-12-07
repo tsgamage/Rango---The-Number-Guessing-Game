@@ -1,6 +1,6 @@
 import { Pressable, StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors, FontSize } from "../../../constants/theme";
+import { Colors, FontSize } from "../../constants/theme";
 import { useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -89,6 +89,7 @@ const PrimaryButton: React.FC<IPrimaryButton> = ({
           onSelect ? onSelect() : null;
         }}
         onLongPress={() => (onLongPress ? onLongPress() : null)}
+        delayLongPress={200}
         disabled={disabled}
       >
         <LinearGradient

@@ -1,7 +1,6 @@
 import { Alert, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import GameWrapper from "../../ui/GameWrapper";
-import PrimaryButton from "../GameMod/PrimaryButton";
+import PrimaryButton from "../../ui/PrimaryButton";
 import { FontSize, Colors } from "../../../constants/theme";
 import ScreenHeader from "../../ui/ScreenHeader";
 import { Game1StackParamList } from "../../../screens/Game1Screen";
@@ -10,52 +9,50 @@ import { generateRandomNumber, getRandomItem } from "../../../utils/utils";
 import { dynamicReactions } from "../../../data/dynamicReactions";
 import { useState } from "react";
 import DynamicReaction from "../../ui/DynamicReaction";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import ScreenWrapper from "../../ui/ScreenWrapper";
 
 type Props = NativeStackScreenProps<Game1StackParamList, "Play">;
 
-let randomNumber = generateRandomNumber(1, 100);
+function PlayScreen({ navigation }: Props) {
+  const dispatch = useAppDispatch();
+  const maxNumber = useAppSelector((state) => state.game1.maxNumber);
+  const initialAttempts = useAppSelector((state) => state.game1.attempts);
 
-function PlayScreen({ navigation, route }: Props) {
-  const { maxNumber, attempts: initialAttempts } = route.params;
-
-  // Re-generate random number based on maxNumber when the screen mounts (or when maxNumber changes)
-  // Since we are inside the component, we should handle this initialization carefully.
-  // Actually, we can just use useState for randomNumber to reset it correctly.
-
-  const [targetNumber, setTargetNumber] = useState(generateRandomNumber(1, maxNumber));
   const [usersGuess, setUsersGuess] = useState<string>("");
   const [reaction, setReaction] = useState<string>("");
-  const [attempts, setAttempts] = useState<number>(initialAttempts);
   const [userGuesses, setUserGuesses] = useState<number[]>([]);
+  const [targetNumber, setTargetNumber] = useState(generateRandomNumber(1, maxNumber));
+  const [remainingAttempts, setRemainingAttempts] = useState<number | null>(initialAttempts);
+  const [isGamePaused, setIsGamePaused] = useState(false);
 
-  type HintType = string;
-  const [hint, setHint] = useState<HintType>("Enter your guess");
+  const [hint, setHint] = useState("Enter your guess");
 
   const restartGame = () => {
     setUsersGuess("");
     setReaction("");
     setHint("Enter your guess");
     setUserGuesses([]);
-    setAttempts(initialAttempts);
     setTargetNumber(generateRandomNumber(1, maxNumber));
+    setRemainingAttempts(initialAttempts);
   };
 
   const renderUserGuesses = () => {
     // Show last 5 guesses
-    const reversedGuesses = [...userGuesses].reverse().slice(0, 5);
+    const prevGuesses = [...userGuesses].slice(-5);
 
-    if (reversedGuesses.length === 0) return null;
+    if (prevGuesses.length === 0) return null;
 
     return (
       <View>
         <Text style={styles.historyLabel}>Recent Guesses</Text>
         <View style={styles.userGuessesContainer}>
-          {reversedGuesses.map((guess, index) => (
+          {prevGuesses.map((guess, index) => (
             <View key={index} style={styles.historyRow}>
               <View style={styles.historyPill}>
                 <Text style={styles.historyText}>{guess}</Text>
               </View>
-              {index < reversedGuesses.length - 1 && <Ionicons name="arrow-back" size={16} color={Colors.glassBorder} />}
+              {index < prevGuesses.length - 1 && <Ionicons name="arrow-forward" size={16} color={Colors.glassBorder} />}
             </View>
           ))}
         </View>
@@ -68,9 +65,11 @@ function PlayScreen({ navigation, route }: Props) {
     const guessNum = parseInt(usersGuess);
     if (isNaN(guessNum)) return;
 
-    // Logic copied from previous implementation, but cleaned up
-    setAttempts((prev) => prev - 1);
+    console.log("Guess Number: ", guessNum);
+    console.log("Target Number: ", targetNumber);
+
     setUserGuesses((prev) => [...prev, guessNum]);
+
     const guessNumber = parseInt(usersGuess);
     const tooFar = Math.abs(guessNumber - targetNumber) > 50;
     const tooHigh = guessNumber > targetNumber && Math.abs(guessNumber - targetNumber) > 20;
@@ -82,31 +81,43 @@ function PlayScreen({ navigation, route }: Props) {
     // Reset input
     setUsersGuess("");
 
-    if (tooFar) {
-      setReaction(getRandomItem(dynamicReactions.guessTooFar));
-      setHint(`${guessNumber} is Way off!`);
-    } else if (tooHigh) {
-      setReaction(getRandomItem(dynamicReactions.guessTooHigh));
-      setHint(`${guessNumber} is Too High`);
-    } else if (tooLow) {
-      setReaction(getRandomItem(dynamicReactions.guessTooLow));
-      setHint(`${guessNumber} is Too Low`);
-    } else if (high) {
-      setReaction(close ? getRandomItem(dynamicReactions.guessTooClose) : getRandomItem(dynamicReactions.guessTooHigh));
-      setHint(`${guessNumber} is High`);
-    } else if (low) {
-      setReaction(close ? getRandomItem(dynamicReactions.guessTooClose) : getRandomItem(dynamicReactions.guessTooLow));
-      setHint(`${guessNumber} is Low`);
-    } else if (guessNumber === targetNumber) {
+    if (guessNumber === targetNumber) {
       Alert.alert("Victory!", getRandomItem(dynamicReactions.userWon), [
         { text: "Play Again", onPress: () => restartGame() },
         { text: "Exit", onPress: () => navigation.goBack() },
       ]);
+    } else {
+      if (remainingAttempts !== null) {
+        setRemainingAttempts((prev) => prev! - 1);
+      }
+      if (tooFar) {
+        setReaction(getRandomItem(dynamicReactions.guessTooFar));
+        setHint(`${guessNumber} is Way off!`);
+      } else if (tooHigh) {
+        setReaction(getRandomItem(dynamicReactions.guessTooHigh));
+        setHint(`${guessNumber} is Too High`);
+      } else if (tooLow) {
+        setReaction(getRandomItem(dynamicReactions.guessTooLow));
+        setHint(`${guessNumber} is Too Low`);
+      } else if (high) {
+        setReaction(close ? getRandomItem(dynamicReactions.guessTooClose) : getRandomItem(dynamicReactions.guessTooHigh));
+        setHint(`${guessNumber} is High`);
+      } else if (low) {
+        setReaction(close ? getRandomItem(dynamicReactions.guessTooClose) : getRandomItem(dynamicReactions.guessTooLow));
+        setHint(`${guessNumber} is Low`);
+      }
+      if (remainingAttempts === 1) {
+        Alert.alert("Game Over!", getRandomItem(dynamicReactions.userLost), [
+          { text: "Play Again", onPress: () => restartGame() },
+          { text: "Change Settings", onPress: () => navigation.goBack() },
+          { text: "Exit", onPress: () => navigation.popToTop() },
+        ]);
+      }
     }
   };
 
   return (
-    <GameWrapper onPlay={() => navigation.goBack()} onPause={() => navigation.goBack()}>
+    <ScreenWrapper>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} keyboardShouldPersistTaps="handled">
           <ScreenHeader>Guess My Number</ScreenHeader>
@@ -115,6 +126,15 @@ function PlayScreen({ navigation, route }: Props) {
             {/* Dynamic Reaction (Flavor Text) at Top */}
             <View style={{ minHeight: 50, justifyContent: "center" }}>{reaction ? <DynamicReaction>{reaction}</DynamicReaction> : null}</View>
 
+            {/* Attempts Count */}
+            {initialAttempts != null && (
+              <View style={styles.attemptsContainer}>
+                <Text style={styles.attemptsText}>
+                  {remainingAttempts} {remainingAttempts === 1 ? "Attempt" : "Attempts"} Remaining
+                </Text>
+              </View>
+            )}
+
             {/* Glass Card Input Area */}
             <View style={styles.glassCard}>
               {/* Hint (Instruction) above Input */}
@@ -122,19 +142,18 @@ function PlayScreen({ navigation, route }: Props) {
               <TextInput
                 style={styles.input}
                 placeholder="?"
-                placeholderTextColor={Colors.glassBorder} // Subtle placeholder
+                placeholderTextColor={Colors.glassBorder}
                 keyboardType="numeric"
                 inputMode="numeric"
                 value={usersGuess}
                 onChangeText={(text) => setUsersGuess(text)}
                 maxLength={2}
-                autoFocus
               />
 
               <PrimaryButton
                 label="GUESS"
                 onPress={onGuessPress}
-                disabled={usersGuess === ""}
+                disabled={usersGuess.trim() === "" || Number(usersGuess) < 1 || isNaN(Number(usersGuess))}
                 containerStyle={styles.submitButtonContainer}
                 buttonTextStyle={{ fontSize: 18, fontWeight: "bold" }}
               />
@@ -142,17 +161,10 @@ function PlayScreen({ navigation, route }: Props) {
 
             {/* History Below */}
             {renderUserGuesses()}
-
-            {/* Attempts Count */}
-            <View style={styles.attemptsContainer}>
-              <Text style={styles.attemptsText}>
-                {attempts} {attempts === 1 ? "Attempt" : "Attempts"} Remaining
-              </Text>
-            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </GameWrapper>
+    </ScreenWrapper>
   );
 }
 
@@ -182,6 +194,8 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   input: {
+    borderBottomWidth: 2,
+    borderBottomColor: Colors.primaryLight,
     fontSize: 64, // HUGE input
     color: Colors.text,
     textAlign: "center",
@@ -233,7 +247,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   attemptsContainer: {
-    marginTop: 20,
+    marginBottom: 20,
     alignItems: "center",
   },
   attemptsText: {

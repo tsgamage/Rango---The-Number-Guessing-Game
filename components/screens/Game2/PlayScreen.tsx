@@ -1,41 +1,66 @@
 import { Alert, StyleSheet, Text, View } from "react-native";
-import GameWrapper from "../../ui/GameWrapper";
-import ScreenHeader from "../../ui/ScreenHeader";
-import PrimaryButton from "../GameMod/PrimaryButton";
+import PrimaryButton from "../../ui/PrimaryButton";
 import DynamicReaction from "../../ui/DynamicReaction";
 import { Colors, FontSize } from "../../../constants/theme";
-import { getRandomItem } from "../../../utils/utils";
-import { useState } from "react";
+import { generateRandomNumber, generateRandomNumberExcluding, getRandomItem } from "../../../utils/utils";
+import { useEffect, useState } from "react";
 import { dynamicReactions } from "../../../data/dynamicReactions";
 import { Game2StackParamList } from "../../../screens/Game2Screen";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import ScreenWrapper from "../../ui/ScreenWrapper";
+import { useAppSelector } from "../../../store/hooks";
 
 type Props = NativeStackScreenProps<Game2StackParamList, "Play">;
 
 function PlayScreen({ navigation }: Props) {
+  const userNumber = useAppSelector((state) => state.game2.userNumber);
   const [reaction, setReaction] = useState("");
+
+  const [maxNumber, setMaxNumber] = useState(99);
+  const [minNumber, setMinNumber] = useState(1);
+  const [generatedNumber, setGeneratedNumber] = useState(generateRandomNumberExcluding(minNumber, maxNumber, [userNumber]));
+  const [previousGuesses, setPreviousGuesses] = useState<number[]>([]);
 
   const handleLying = () => {
     setReaction(getRandomItem(dynamicReactions.lying));
     Alert.alert("Don't Lie to me...", getRandomItem(dynamicReactions.lying), [{ text: "Sorry", onPress: () => {} }]);
   };
 
+  const handleHigher = () => {
+    if (userNumber < generatedNumber) {
+      handleLying();
+      return;
+    }
+    setMinNumber(generatedNumber + 1);
+    setPreviousGuesses([...previousGuesses, generatedNumber]);
+    setGeneratedNumber(generateRandomNumberExcluding(generatedNumber + 1, maxNumber, previousGuesses));
+  };
+
+  const handleLower = () => {
+    if (userNumber > generatedNumber) {
+      handleLying();
+      return;
+    }
+    setMaxNumber(generatedNumber - 1);
+    setPreviousGuesses([...previousGuesses, generatedNumber]);
+    setGeneratedNumber(generateRandomNumberExcluding(minNumber, generatedNumber - 1, previousGuesses));
+  };
+
+  useEffect(() => {
+    if (generatedNumber === userNumber) {
+      Alert.alert("Yes, i won!", "Rango guessed your number", [{ text: "Play Again", onPress: () => navigation.replace("UserNumberEntering") }]);
+    }
+  }, [generatedNumber]);
+
   return (
-    <GameWrapper
-      onPlay={() => {
-        navigation.goBack();
-      }}
-      onPause={() => {
-        navigation.goBack();
-      }}
-    >
+    <ScreenWrapper>
       <View style={styles.container}>
         {/* Dynamic Reaction at Top */}
 
         {/* Circular Glass Card for the Guess */}
         <View style={styles.circleContainer}>
           <View style={styles.glassCircle}>
-            <Text style={styles.guessNumber}>99</Text>
+            <Text style={styles.guessNumber}>{generatedNumber}</Text>
           </View>
         </View>
         <View style={{ minHeight: 60, justifyContent: "center", alignItems: "center", width: "100%" }}>
@@ -46,12 +71,12 @@ function PlayScreen({ navigation }: Props) {
             <Text style={styles.hintText}>Tell Rango...</Text>
           </View>
           <View style={styles.buttonContainer}>
-            <PrimaryButton label="Lower" onPress={() => {}} containerStyle={styles.actionButtonContainer} icon={{ icon: "arrow-down" }} />
-            <PrimaryButton label="Higher" onPress={handleLying} containerStyle={styles.actionButtonContainer} icon={{ icon: "arrow-up" }} />
+            <PrimaryButton label="Lower" onPress={handleLower} containerStyle={styles.actionButtonContainer} icon={{ icon: "arrow-down" }} />
+            <PrimaryButton label="Higher" onPress={handleHigher} containerStyle={styles.actionButtonContainer} icon={{ icon: "arrow-up" }} />
           </View>
         </View>
       </View>
-    </GameWrapper>
+    </ScreenWrapper>
   );
 }
 

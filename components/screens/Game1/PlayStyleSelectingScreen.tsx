@@ -1,8 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import PrimaryButton, { IPrimaryButton } from "../GameMod/PrimaryButton";
+import PrimaryButton, { IPrimaryButton } from "../../ui/PrimaryButton";
 import { Colors, FontSize } from "../../../constants/theme";
-import { RootStackParamList } from "../../../App";
 import DynamicReaction from "../../ui/DynamicReaction";
 import ScreenHeader from "../../ui/ScreenHeader";
 import { useMemo, useState } from "react";
@@ -10,12 +8,15 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import ScreenWrapper from "../../ui/ScreenWrapper";
 import { Game1StackParamList } from "../../../screens/Game1Screen";
 import { getRandomItem } from "../../../utils/utils";
+import { useAppDispatch } from "../../../store/hooks";
+import { game1Actions } from "../../../store/slice/game1.slice";
 
 const descriptionTexts = ["Select how you want to challenge your brain", "Pick a style. Let's rumble!", "Choose your vibe for this round."];
 
 type Props = NativeStackScreenProps<Game1StackParamList, "PlayStyleSelecting">;
 
 function PlayStyleSelectingScreen({ navigation }: Props) {
+  const dispatch = useAppDispatch();
   const [gameDescription, setGameDescription] = useState<{
     game: number;
     description: string;
@@ -42,10 +43,10 @@ function PlayStyleSelectingScreen({ navigation }: Props) {
         setGameDescription(gameDescriptions[0]);
       },
       onLongPress() {
-        navigation.navigate("Play", {
-          attempts: 999, // Essentially infinite for Zen Mode? Or just a high number
-          maxNumber: 100,
-        });
+        dispatch(game1Actions.setGameStyle("zen"));
+        dispatch(game1Actions.setMaxNumber(99));
+        dispatch(game1Actions.setAttempts(null));
+        navigation.navigate("Play");
       },
     },
     {
@@ -54,6 +55,7 @@ function PlayStyleSelectingScreen({ navigation }: Props) {
         setGameDescription(gameDescriptions[1]);
       },
       onLongPress() {
+        dispatch(game1Actions.setGameStyle("challenge"));
         navigation.navigate("OptionSelecting");
       },
     },

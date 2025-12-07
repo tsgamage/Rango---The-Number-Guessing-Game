@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import PrimaryButton, { IPrimaryButton } from "../components/screens/GameMod/PrimaryButton";
+import PrimaryButton, { IPrimaryButton } from "../components/ui/PrimaryButton";
 import { Colors, FontSize } from "../constants/theme";
 import { RootStackParamList } from "../App";
 import { getRandomItem } from "../utils/utils";
@@ -64,16 +64,16 @@ function GameModeSelectScreen({ navigation }: Props) {
       },
       description: gameDescriptions[1].description,
     },
-    {
-      label: "Guessing Battle",
-      onPress() {
-        setGameDescription(gameDescriptions[2]);
-      },
-      onLongPress() {
-        navigation.navigate("Game3");
-      },
-      description: gameDescriptions[2].description,
-    },
+    // {
+    //   label: "Guessing Battle",
+    //   onPress() {
+    //     setGameDescription(gameDescriptions[2]);
+    //   },
+    //   onLongPress() {
+    //     navigation.navigate("Game3");
+    //   },
+    //   description: gameDescriptions[2].description,
+    // },
   ];
 
   return (

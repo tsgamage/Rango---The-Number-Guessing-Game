@@ -8,6 +8,8 @@ import LooseScreen from "./screens/LooseScreen";
 import WelcomeScreen from "./screens/WelcomeScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
+import { Provider } from "react-redux";
+import { store } from "./store/store";
 
 export type RootStackParamList = {
   Welcome: undefined;
@@ -24,18 +26,20 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function App() {
   return (
     <>
-      <NavigationContainer>
-        <StatusBar style="light" />
-        <Stack.Navigator initialRouteName="Welcome" screenOptions={{ headerTransparent: true, headerTitle: "", headerShown: false }}>
-          <Stack.Screen name="Welcome" component={WelcomeScreen} />
-          <Stack.Screen name="GameModeSelect" component={GameModeSelectScreen} />
-          <Stack.Screen name="Game1" component={Game1Screen} />
-          <Stack.Screen name="Game2" component={Game2Screen} />
-          <Stack.Screen name="Game3" component={Game3Screen} />
-          <Stack.Screen name="Win" component={WinScreen} />
-          <Stack.Screen name="Loose" component={LooseScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <Provider store={store}>
+        <NavigationContainer>
+          <StatusBar style="light" />
+          <Stack.Navigator initialRouteName="Welcome" screenOptions={{ headerTransparent: true, headerTitle: "", headerShown: false }}>
+            <Stack.Screen name="Welcome" component={WelcomeScreen} />
+            <Stack.Screen name="GameModeSelect" component={GameModeSelectScreen} />
+            <Stack.Screen name="Game1" component={Game1Screen} />
+            <Stack.Screen name="Game2" component={Game2Screen} />
+            <Stack.Screen name="Game3" component={Game3Screen} />
+            <Stack.Screen name="Win" component={WinScreen} />
+            <Stack.Screen name="Loose" component={LooseScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </Provider>
     </>
   );
 }

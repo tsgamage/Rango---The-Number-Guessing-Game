@@ -1,18 +1,21 @@
 import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { Colors, FontSize } from "../../../constants/theme";
-import PrimaryButton from "../GameMod/PrimaryButton";
+import PrimaryButton from "../../ui/PrimaryButton";
 import DynamicReaction from "../../ui/DynamicReaction";
 import { getRandomItem } from "../../../utils/utils";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ScreenHeader from "../../ui/ScreenHeader";
 import ScreenWrapper from "../../ui/ScreenWrapper";
 import { Game2StackParamList } from "../../../screens/Game2Screen";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useAppDispatch } from "../../../store/hooks";
+import { game2Actions } from "../../../store/slice/game2.slice";
 
 type Props = NativeStackScreenProps<Game2StackParamList, "UserNumberEntering">;
 
 export const UserNumberEnteringScreen = ({ navigation }: Props) => {
   const [userNumber, setUserNumber] = useState<string>("");
+  const dispatch = useAppDispatch();
 
   const dynamicReactionTexts = [
     "I won't peek, I swear.",
@@ -22,14 +25,20 @@ export const UserNumberEnteringScreen = ({ navigation }: Props) => {
     "I'll keep this absolutely secret",
   ];
 
+  const dynamicReaction = useMemo(() => getRandomItem(dynamicReactionTexts), []);
+
   return (
     <ScreenWrapper>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <ScrollView style={style.scrollView} contentContainerStyle={style.scrollViewContent} keyboardShouldPersistTaps="handled">
           <View style={style.container}>
             <View>
-              <ScreenHeader>Enter Your Secret Number</ScreenHeader>
-              <ScreenHeader headerSize="small">Between 1 and 100</ScreenHeader>
+              <ScreenHeader style={style.header} headerSize="large">
+                Enter Your Secret Number
+              </ScreenHeader>
+              <ScreenHeader headerStyle={style.subHeader} headerSize="small">
+                Between 1 and 100
+              </ScreenHeader>
             </View>
             <View style={style.glassCard}>
               <TextInput
@@ -37,7 +46,7 @@ export const UserNumberEnteringScreen = ({ navigation }: Props) => {
                 keyboardType="numeric"
                 value={userNumber}
                 onChangeText={setUserNumber}
-                maxLength={3}
+                maxLength={2}
                 inputMode="numeric"
                 placeholder="?"
                 placeholderTextColor={Colors.glassBorder}
@@ -49,12 +58,16 @@ export const UserNumberEnteringScreen = ({ navigation }: Props) => {
                 icon={{ icon: "arrow-forward" }}
                 onPress={() => {
                   if (userNumber.trim() === "") return;
+                  if (Number(userNumber) < 1 || Number(userNumber) > 100) return;
+                  if (isNaN(Number(userNumber))) return;
+                  setUserNumber("");
+                  dispatch(game2Actions.setUserNumber(Number(userNumber)));
                   navigation.navigate("Play");
                 }}
-                disabled={userNumber.trim() === ""}
+                disabled={userNumber.trim() === "" || Number(userNumber) < 1 || Number(userNumber) > 100 || isNaN(Number(userNumber))}
               />
             </View>
-            <DynamicReaction>{getRandomItem(dynamicReactionTexts)}</DynamicReaction>
+            <DynamicReaction>{dynamicReaction}</DynamicReaction>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -63,8 +76,15 @@ export const UserNumberEnteringScreen = ({ navigation }: Props) => {
 };
 
 const style = StyleSheet.create({
+  header: {
+    marginBottom: -15,
+  },
+  subHeader: {
+    color: Colors.textSecondary,
+  },
   scrollView: {
     flex: 1,
+    padding: 10,
   },
   scrollViewContent: {
     flexGrow: 1,
