@@ -6,7 +6,7 @@ import PlayScreen from "../components/screens/Game1/PlayScreen";
 export type Game1StackParamList = {
   PlayStyleSelecting: undefined;
   OptionSelecting: undefined;
-  Play: undefined;
+  Play: { attempts: number; maxNumber: number };
 };
 
 function Game1Screen() {

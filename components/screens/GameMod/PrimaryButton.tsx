@@ -92,7 +92,7 @@ const PrimaryButton: React.FC<IPrimaryButton> = ({
         disabled={disabled}
       >
         <LinearGradient
-          colors={Colors.gradients.button as any}
+          colors={isSelected ? [Colors.primaryDark, "#022c22"] : (Colors.gradients.button as any)}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={[
@@ -107,11 +107,11 @@ const PrimaryButton: React.FC<IPrimaryButton> = ({
               <Ionicons
                 name={icon.icon}
                 size={24}
-                color={Colors.text} // Use theme text for contrast
+                color={isSelected ? Colors.textHighlight : Colors.text} // Highlight icon if selected
                 style={iconStyle}
               />
             )}
-            <Text style={[styles.buttonText, buttonTextStyle]}>{label}</Text>
+            <Text style={[styles.buttonText, buttonTextStyle, isSelected && { color: Colors.textHighlight }]}>{label}</Text>
             {icon && iconVisible && iconPositionRight && (
               <Ionicons
                 name={icon.icon}
@@ -123,7 +123,7 @@ const PrimaryButton: React.FC<IPrimaryButton> = ({
           </View>
           {description && (
             <View style={[styles.buttonDescriptionContainer, descriptionContainerStyle]}>
-              <Text style={[styles.buttonDescription, descriptionStyle]}>{description}</Text>
+              <Text style={[styles.buttonDescription, descriptionStyle, isSelected && { color: Colors.textSecondary }]}>{description}</Text>
             </View>
           )}
         </LinearGradient>
@@ -160,8 +160,8 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   buttonContainerSelected: {
-    borderWidth: 2,
-    borderColor: Colors.primaryLight,
+    borderWidth: 3,
+    borderColor: Colors.text, // High contrast border (Mint White)
   },
   button: {
     flexDirection: "row",

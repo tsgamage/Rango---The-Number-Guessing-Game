@@ -1,7 +1,8 @@
 import { Alert, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import GameWrapper from "../../ui/GameWrapper";
 import PrimaryButton from "../GameMod/PrimaryButton";
-import { FontSize } from "../../../constants/theme";
+import { FontSize, Colors } from "../../../constants/theme";
 import ScreenHeader from "../../ui/ScreenHeader";
 import { Game1StackParamList } from "../../../screens/Game1Screen";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -12,15 +13,22 @@ import DynamicReaction from "../../ui/DynamicReaction";
 
 type Props = NativeStackScreenProps<Game1StackParamList, "Play">;
 
-let randomNumber = generateRandomNumber(1, 99);
+let randomNumber = generateRandomNumber(1, 100);
 
-function PlayScreen({ navigation }: Props) {
+function PlayScreen({ navigation, route }: Props) {
+  const { maxNumber, attempts: initialAttempts } = route.params;
+
+  // Re-generate random number based on maxNumber when the screen mounts (or when maxNumber changes)
+  // Since we are inside the component, we should handle this initialization carefully.
+  // Actually, we can just use useState for randomNumber to reset it correctly.
+
+  const [targetNumber, setTargetNumber] = useState(generateRandomNumber(1, maxNumber));
   const [usersGuess, setUsersGuess] = useState<string>("");
   const [reaction, setReaction] = useState<string>("");
-  const [attempts, setAttempts] = useState<number>(10);
+  const [attempts, setAttempts] = useState<number>(initialAttempts);
   const [userGuesses, setUserGuesses] = useState<number[]>([]);
 
-  type HintType = "Enter your guess" | "Too Low" | "Too High" | "High" | "Low" | "Close" | "Too Far";
+  type HintType = string;
   const [hint, setHint] = useState<HintType>("Enter your guess");
 
   const restartGame = () => {
@@ -28,23 +36,29 @@ function PlayScreen({ navigation }: Props) {
     setReaction("");
     setHint("Enter your guess");
     setUserGuesses([]);
-    setAttempts(10);
-    randomNumber = generateRandomNumber(1, 99);
+    setAttempts(initialAttempts);
+    setTargetNumber(generateRandomNumber(1, maxNumber));
   };
 
   const renderUserGuesses = () => {
-    const lastThreeGuesses = userGuesses.slice(-3);
+    // Show last 5 guesses
+    const reversedGuesses = [...userGuesses].reverse().slice(0, 5);
+
+    if (reversedGuesses.length === 0) return null;
 
     return (
-      <View style={styles.userGuessesContainer}>
-        {lastThreeGuesses.map((guess, index) => {
-          return (
-            <>
-              <Text key={index}>{guess}</Text>
-              {index < lastThreeGuesses.length - 1 && <Text>{"->"}</Text>}
-            </>
-          );
-        })}
+      <View>
+        <Text style={styles.historyLabel}>Recent Guesses</Text>
+        <View style={styles.userGuessesContainer}>
+          {reversedGuesses.map((guess, index) => (
+            <View key={index} style={styles.historyRow}>
+              <View style={styles.historyPill}>
+                <Text style={styles.historyText}>{guess}</Text>
+              </View>
+              {index < reversedGuesses.length - 1 && <Ionicons name="arrow-back" size={16} color={Colors.glassBorder} />}
+            </View>
+          ))}
+        </View>
       </View>
     );
   };
@@ -53,77 +67,86 @@ function PlayScreen({ navigation }: Props) {
     <GameWrapper onPlay={() => navigation.goBack()} onPause={() => navigation.goBack()}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} keyboardShouldPersistTaps="handled">
-          <ScreenHeader>I'm thinking of a number…</ScreenHeader>
-          <ScreenHeader headerSize="small">Guess the number if you can</ScreenHeader>
+          <ScreenHeader>Guess My Number</ScreenHeader>
 
           <View style={styles.container}>
-            {/* <View><Text style={styles.attemptsText}>Remaining Attempts: 10</Text></View> */}
-            <View style={styles.inputContainer}>
-              <ScreenHeader headerSize="small">{userGuesses.slice(-1) + " is " + hint}</ScreenHeader>
+            {/* Dynamic Reaction (Flavor Text) at Top */}
+            <View style={{ minHeight: 50, justifyContent: "center" }}>{reaction ? <DynamicReaction>{reaction}</DynamicReaction> : null}</View>
+
+            {/* Glass Card Input Area */}
+            <View style={styles.glassCard}>
+              {/* Hint (Instruction) above Input */}
+              <Text style={styles.hintText}>{hint}</Text>
               <TextInput
                 style={styles.input}
-                placeholderTextColor="gray"
+                placeholder="?"
+                placeholderTextColor={Colors.glassBorder} // Subtle placeholder
                 keyboardType="numeric"
                 inputMode="numeric"
                 value={usersGuess}
                 onChangeText={(text) => setUsersGuess(text)}
                 maxLength={2}
+                autoFocus
               />
+
               <PrimaryButton
-                label="Guess"
-                containerStyle={{ width: "100%" }}
-                buttonStyle={styles.submitButton}
-                buttonContainerStyle={styles.submitButtonContainer}
-                disabled={usersGuess === ""}
+                label="GUESS"
                 onPress={() => {
                   if (usersGuess === "") return;
-                  setUserGuesses((prev) => [...prev, parseInt(usersGuess)]);
+                  const guessNum = parseInt(usersGuess);
+                  if (isNaN(guessNum)) return;
+
+                  // Logic copied from previous implementation, but cleaned up
+                  setAttempts((prev) => prev - 1);
+                  setUserGuesses((prev) => [...prev, guessNum]);
                   const guessNumber = parseInt(usersGuess);
-                  const tooFar = Math.abs(guessNumber - randomNumber) > 50;
-                  const tooHigh = guessNumber > randomNumber && Math.abs(guessNumber - randomNumber) > 20;
-                  const tooLow = guessNumber < randomNumber && Math.abs(guessNumber - randomNumber) > 20;
-                  const high = guessNumber > randomNumber;
-                  const low = guessNumber < randomNumber;
-                  const close = Math.abs(guessNumber - randomNumber) <= 5;
+                  const tooFar = Math.abs(guessNumber - targetNumber) > 50;
+                  const tooHigh = guessNumber > targetNumber && Math.abs(guessNumber - targetNumber) > 20;
+                  const tooLow = guessNumber < targetNumber && Math.abs(guessNumber - targetNumber) > 20;
+                  const high = guessNumber > targetNumber;
+                  const low = guessNumber < targetNumber;
+                  const close = Math.abs(guessNumber - targetNumber) <= 5;
+
+                  // Reset input
+                  setUsersGuess("");
 
                   if (tooFar) {
                     setReaction(getRandomItem(dynamicReactions.guessTooFar));
-                    setHint("Too Far");
-                    setUsersGuess("");
+                    setHint(`${guessNumber} is Way off!`);
                   } else if (tooHigh) {
                     setReaction(getRandomItem(dynamicReactions.guessTooHigh));
-                    setHint("Too High");
-                    setUsersGuess("");
+                    setHint(`${guessNumber} is Too High`);
                   } else if (tooLow) {
                     setReaction(getRandomItem(dynamicReactions.guessTooLow));
-                    setUsersGuess("");
-                    setHint("Too Low");
+                    setHint(`${guessNumber} is Too Low`);
                   } else if (high) {
-                    if (close) {
-                      setReaction(getRandomItem(dynamicReactions.guessTooClose));
-                    } else {
-                      setReaction(getRandomItem(dynamicReactions.guessTooHigh));
-                    }
-                    setHint("High");
-                    setUsersGuess("");
+                    setReaction(close ? getRandomItem(dynamicReactions.guessTooClose) : getRandomItem(dynamicReactions.guessTooHigh));
+                    setHint(`${guessNumber} is High`);
                   } else if (low) {
-                    if (close) {
-                      setReaction(getRandomItem(dynamicReactions.guessTooClose));
-                    } else {
-                      setReaction(getRandomItem(dynamicReactions.guessTooLow));
-                    }
-                    setHint("Low");
-                    setUsersGuess("");
-                  } else if (guessNumber === randomNumber) {
-                    Alert.alert("You Won", getRandomItem(dynamicReactions.userWon), [
+                    setReaction(close ? getRandomItem(dynamicReactions.guessTooClose) : getRandomItem(dynamicReactions.guessTooLow));
+                    setHint(`${guessNumber} is Low`);
+                  } else if (guessNumber === targetNumber) {
+                    Alert.alert("Victory!", getRandomItem(dynamicReactions.userWon), [
                       { text: "Play Again", onPress: () => restartGame() },
                       { text: "Exit", onPress: () => navigation.goBack() },
                     ]);
                   }
                 }}
+                disabled={usersGuess === ""}
+                containerStyle={styles.submitButtonContainer}
+                buttonStyle={styles.submitButton}
+                buttonTextStyle={{ fontSize: 18, fontWeight: "bold" }}
               />
-              {reaction && <DynamicReaction>{reaction}</DynamicReaction>}
-              <Text>{renderUserGuesses()}</Text>
+            </View>
+
+            {/* History Below */}
+            {renderUserGuesses()}
+
+            {/* Attempts Count */}
+            <View style={styles.attemptsContainer}>
+              <Text style={styles.attemptsText}>
+                {attempts} {attempts === 1 ? "Attempt" : "Attempts"} Remaining
+              </Text>
             </View>
           </View>
         </ScrollView>
@@ -140,42 +163,84 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     flexGrow: 1,
+    paddingBottom: 24,
   },
   container: {
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: 20,
+    marginTop: 20,
+  },
+  glassCard: {
+    backgroundColor: Colors.glass,
+    borderRadius: 24,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: Colors.glassBorder,
+    alignItems: "center",
+    gap: 20,
   },
   input: {
-    borderWidth: 1,
-    borderColor: "gray",
-    borderRadius: 10,
-    padding: 10,
-    fontSize: FontSize.extraLarge,
-    color: "black",
+    fontSize: 64, // HUGE input
+    color: Colors.text,
     textAlign: "center",
     width: "100%",
-  },
-  inputContainer: {
-    gap: 10,
-    backgroundColor: "whitesmoke",
-    padding: 20,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "gray",
-    alignItems: "center",
+    fontWeight: "800",
+    paddingVertical: 10,
   },
   submitButtonContainer: {
-    paddingVertical: 10,
     width: "100%",
   },
   submitButton: {
-    width: "100%",
+    marginTop: 10,
+  },
+  historyLabel: {
+    color: Colors.textSecondary,
+    fontSize: FontSize.small,
+    marginTop: 20,
+    marginBottom: 10,
+    textAlign: "center",
+    fontWeight: "600",
   },
   userGuessesContainer: {
-    flex: 1,
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 10,
+    justifyContent: "center",
+    gap: 4,
+  },
+  historyRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  historyPill: {
+    backgroundColor: "rgba(0,0,0,0.2)",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: Colors.glassBorder,
+  },
+  historyText: {
+    color: Colors.textSecondary,
+    fontSize: FontSize.small,
+    fontWeight: "600",
+  },
+  hintText: {
+    color: Colors.textHighlight, // Use highlight color for importance
+    fontSize: FontSize.medium,
+    fontWeight: "bold",
+    textAlign: "center",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+  },
+  attemptsContainer: {
+    marginTop: 20,
+    alignItems: "center",
+  },
+  attemptsText: {
+    color: Colors.textSecondary,
+    fontSize: FontSize.small,
+    fontWeight: "600",
   },
 });

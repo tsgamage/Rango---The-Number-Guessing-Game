@@ -5,9 +5,13 @@ import ScreenWrapper from "../../ui/ScreenWrapper";
 import PrimaryButton from "../GameMod/PrimaryButton";
 import DynamicReaction from "../../ui/DynamicReaction";
 import { getRandomItem } from "../../../utils/utils";
-import { FontSize } from "../../../constants/theme";
+import { FontSize, Colors } from "../../../constants/theme";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { Game1StackParamList } from "../../../screens/Game1Screen";
 
-function OptionSelectingScreen() {
+type Props = NativeStackScreenProps<Game1StackParamList, "OptionSelecting">;
+
+function OptionSelectingScreen({ navigation }: Props) {
   type NumberRangeLabel = "Easy" | "Medium" | "Hard";
   type NumberRangeDescription = "1- 20" | "1- 50" | "1- 100";
   const numberRangeOptions: {
@@ -31,6 +35,17 @@ function OptionSelectingScreen() {
 
   const handleChanceOptionChange = (option: ChanceOptions) => {
     setChanceOption(option);
+  };
+
+  const handleStartGame = () => {
+    let maxNumber = 20;
+    if (numberRangeOption === "Medium") maxNumber = 50;
+    if (numberRangeOption === "Hard") maxNumber = 100;
+
+    navigation.navigate("Play", {
+      attempts: parseInt(chanceOption),
+      maxNumber: maxNumber,
+    });
   };
 
   const dynamicReactionTexts = ["Let's Go", "Ready", "Let's Play"];
@@ -80,7 +95,7 @@ function OptionSelectingScreen() {
           </View>
         </View>
         <View>
-          <PrimaryButton label="Let's Go" onPress={() => console.log("")} icon={{ icon: "arrow-forward" }} />
+          <PrimaryButton label="Let's Go" onPress={handleStartGame} icon={{ icon: "arrow-forward" }} />
           <DynamicReaction>{getRandomItem(dynamicReactionTexts)}</DynamicReaction>
         </View>
       </View>
@@ -93,13 +108,18 @@ export default OptionSelectingScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "space-evenly",
+    justifyContent: "space-between",
+    paddingBottom: 20,
   },
   optionHeader: {
     textAlign: "left",
+    color: Colors.text,
+    fontWeight: "bold",
+    fontSize: FontSize.medium,
   },
   optionHeaderContainer: {
     marginBottom: 10,
+    alignItems: "flex-start",
   },
   numberRangeOptionButtonsContainer: {
     gap: 10,
@@ -110,7 +130,7 @@ const styles = StyleSheet.create({
   },
   rangeButtonDescription: {
     textAlign: "center",
-    fontSize: FontSize.medium,
-    color: "gray",
+    fontSize: FontSize.small,
+    color: Colors.textSecondary,
   },
 });

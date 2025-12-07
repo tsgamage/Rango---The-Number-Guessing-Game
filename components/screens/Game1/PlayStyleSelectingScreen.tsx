@@ -42,7 +42,10 @@ function PlayStyleSelectingScreen({ navigation }: Props) {
         setGameDescription(gameDescriptions[0]);
       },
       onLongPress() {
-        navigation.navigate("Play");
+        navigation.navigate("Play", {
+          attempts: 999, // Essentially infinite for Zen Mode? Or just a high number
+          maxNumber: 100,
+        });
       },
     },
     {
@@ -98,21 +101,27 @@ function PlayStyleSelectingScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    // Background handled by global App wrapper
     alignItems: "center",
     justifyContent: "center",
   },
   headerContainer: {
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: 20,
   },
   modSelectHintText: {
     fontSize: FontSize.small,
     textAlign: "center",
     borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    borderColor: "#00000050",
+    borderRadius: 20, // Pill shape
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderColor: Colors.glassBorder,
+    backgroundColor: Colors.glass,
+    color: Colors.textSecondary,
+    overflow: "hidden",
+    marginTop: 8,
   },
 });
 
