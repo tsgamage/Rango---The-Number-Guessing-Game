@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   emoji: {
+    textAlign: "center",
     fontSize: 64,
     marginBottom: 16,
   },

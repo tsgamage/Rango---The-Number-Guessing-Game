@@ -2,6 +2,7 @@ import { Pressable, StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } fr
 import { Ionicons } from "@expo/vector-icons";
 import { Colors, FontSize } from "../../constants/theme";
 import { LinearGradient } from "expo-linear-gradient";
+import { Vibration } from "react-native";
 
 export interface IPrimaryButton {
   label: string;
@@ -79,15 +80,28 @@ const PrimaryButton: React.FC<IPrimaryButton> = ({
   const iconPositionLeft = icon?.position === "left";
   const iconPositionRight = icon?.position === "right" || icon?.position === undefined;
 
+  const handleOnPress = () => {
+    if (onPress) {
+      Vibration.vibrate(40);
+      onPress();
+    } else if (onSelect) {
+      Vibration.vibrate(20);
+      onSelect();
+    }
+  };
+  const handleOnLongPress = () => {
+    if (onLongPress) {
+      onLongPress();
+      Vibration.vibrate(100);
+    }
+  };
+
   return (
     <View style={[styles.pressableContainer, containerStyle]}>
       <Pressable
         android_ripple={{ color: Colors.primaryDark, foreground: true }}
-        onPress={() => {
-          onPress ? onPress() : null;
-          onSelect ? onSelect() : null;
-        }}
-        onLongPress={() => (onLongPress ? onLongPress() : null)}
+        onPress={handleOnPress}
+        onLongPress={handleOnLongPress}
         delayLongPress={200}
         disabled={disabled}
       >

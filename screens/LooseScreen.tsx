@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, Vibration, View } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import ScreenWrapper from "../components/ui/ScreenWrapper";
 import ScreenHeader from "../components/ui/ScreenHeader";
@@ -7,11 +7,16 @@ import { Colors, FontSize } from "../constants/theme";
 
 import { Game1StackParamList } from "../screens/Game1Screen";
 import DynamicReaction from "../components/ui/DynamicReaction";
+import { useLayoutEffect } from "react";
 
 type Props = NativeStackScreenProps<Game1StackParamList, "Loose">;
 
 function LooseScreen({ navigation, route }: Props) {
   const { title, subtitle, nextRoute, number } = route.params;
+
+  useLayoutEffect(() => {
+    Vibration.vibrate([0, 100, 50, 100, 150, 200]);
+  }, []);
 
   return (
     <ScreenWrapper>
