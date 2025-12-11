@@ -1,75 +1,92 @@
-# Rango - The Number Guessing Game
+# **Rango – The Ultimate Guessing Experience**
 
-Rango is a modern, interactive, and visually engaging number guessing game built with **React Native** and **Expo**. Designed with a focus on aesthetics and user experience, it features dynamic game modes, liquid animations, and a polished glassmorphism-inspired UI.
+**Rango** is a modern and interactive number-guessing game built with **React Native** and **Expo**, designed to deliver a refined, fluid, and visually polished mobile experience.
+With its dynamic game modes, responsive animations, and clean glassmorphism-inspired interface, Rango emphasizes clarity, enjoyment, and thoughtful UI/UX principles.
 
-## 🚀 Features
+---
 
-### 🎮 Multiple Game Modes
+## **Features**
 
-Challenge your intuition or test the computer's logic with two distinct ways to play:
+### **Multiple Game Modes**
 
-- **I Will Guess (Game 1)**: The classic mode where Rango picks a random number, and you have to guess it.
-  - **Zen Mode**: A relaxed experience with unlimited attempts. Perfect for casual play.
-  - **Challenge Mode**: Race against the clock or limited attempts to beat Rango's challenge. customizable difficulty settings.
-- **Rango Will Guess (Game 2)**: Turn the tables! Pick a number, and guide Rango to the answer using hints (Lower/Higher). Watch the AI deduce your number efficiently.
+Rango includes two core modes, designed to offer both casual and competitive play:
 
-### ✨ Premium UI/UX
+**1. I Will Guess (Game 1)**
+The classic mode where Rango selects a number and the user attempts to guess it.
 
-- **Modern Design**: A sleek interface featuring linear gradients, glassmorphism effects, and a custom color palette.
-- **Haptic Feedback**: Meaningful tactile responses for interactions (if implemented support is active).
+* **Zen Mode**: A relaxed, unlimited-attempt mode ideal for easygoing gameplay.
+* **Challenge Mode**: A more competitive format with limited attempts or timing constraints.
 
-## 🛠️ Tech Stack
+**2. Rango Will Guess (Game 2)**
+Reverse the challenge by selecting a number yourself and guiding Rango with “higher” or “lower” hints.
+This mode highlights efficient deduction and offers a distinctive twist on the traditional guessing formula.
 
-- **Framework**: [React Native](https://reactnative.dev/) (via [Expo](https://expo.dev/))
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/)
-- **Navigation**: [React Navigation](https://reactnavigation.org/) (Native Stack)
-- **Styling**: StyleSheet with custom theme constants (`expo-linear-gradient`, `react-native-safe-area-context`).
-- **Icons**: `@expo/vector-icons`
+---
 
-## 📂 Project Structure
+## **UI/UX Design Overview**
+
+* Clean, modern visual design incorporating subtle gradients and glassmorphism themes.
+* Intuitive layout with attention to accessibility and clarity.
+* Optional haptic feedback support for compatible devices.
+* Consistent component styling using a centralized theme and color system.
+
+---
+
+## **Technology Stack**
+
+* **Framework:** React Native (Expo)
+* **Language:** TypeScript
+* **State Management:** Redux Toolkit
+* **Navigation:** React Navigation (Native Stack)
+* **Styling & Layout:** StyleSheet, custom theme constants, expo-linear-gradient, react-native-safe-area-context
+* **Icons:** @expo/vector-icons
+
+---
+
+## **Project Structure**
 
 ```
 Rango/
-├── assets/          # Images and static assets
+├── assets/          # Static assets and images
 ├── components/      # Reusable UI components
-│   ├── screens/     # Screen-specific logical components (e.g., Game1)
+│   ├── screens/     # Game-specific logic and view components
 │   └── ui/          # Generic UI elements (Buttons, Headers, Cards)
-├── constants/       # Global configurations (Colors, Fonts)
-├── screens/         # Main application screens (Views)
+├── constants/       # Theme, colors, fonts, global config
+├── screens/         # Main application screens
 ├── store/           # Redux store and slices
 ├── utils/           # Helper functions and utilities
 └── App.tsx          # Application entry point
 ```
 
-## ⚡ Getting Started
+---
 
-Follow these steps to set up and run the project locally.
+## **Getting Started**
 
-### Prerequisites
+### **Prerequisites**
 
-- Node.js (LTS version recommended)
-- npm, yarn, or pnpm
-- Expo Go app on your physical device (Android/iOS) OR an Emulator/Simulator.
+* Node.js (LTS recommended)
+* npm, yarn, or pnpm
+* Expo Go app on a physical device (Android or iOS), or a working mobile emulator/simulator.
 
-### Installation
+### **Installation**
 
-1.  **Clone the repository** (or navigate to the project directory):
+1. Clone the repository and navigate into the project directory:
 
-    ```bash
-    cd Rango
-    ```
+   ```bash
+   cd Rango
+   ```
 
-2.  **Install dependencies**:
-    ```bash
-    npm install
-    # or
-    yarn install
-    # or
-    pnpm install
-    ```
+2. Install required dependencies:
 
-### Running the App
+   ```bash
+   npm install
+   # or
+   yarn install
+   # or
+   pnpm install
+   ```
+
+### **Running the Application**
 
 Start the Expo development server:
 
@@ -77,17 +94,21 @@ Start the Expo development server:
 npx expo start
 ```
 
-- **Scan the QR code** with the **Expo Go** app on your Android (or Camera app on iOS).
-- Press `a` to open in Android Emulator.
-- Press `i` to open in iOS Simulator.
-- Press `w` to open in Web Browser.
+You may then:
 
-## 🤝 Contributing
+* Scan the QR code using the Expo Go app
+* Press `a` to launch on Android Emulator
+* Press `i` to launch on iOS Simulator
+* Press `w` to launch in a web browser
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+---
 
-1.  Fork the project
-2.  Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4.  Push to the branch (`git push origin feature/AmazingFeature`)
-5.  Open a Pull Request
+## **Contributing**
+
+Contributions are welcome. To contribute:
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m "Add AmazingFeature"`)
+4. Push the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
